@@ -1,0 +1,7 @@
+{
+  "name": "Copy of SULTAN NEXUS (2026)",
+  "description": "Advanced Cognitive Simulator and Parenting Copilot for Sultan Feras Aiham Assaf. Features real-time behavioral analysis, memory vault, and AI-driven parenting strategies.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "Interaction": {
+      "title": "Interaction",
+      "description": "A record of a dialogue or scenario involving Sultan.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "userPrompt": { "type": "string" },
+        "sultanResponse": { "type": "string" },
+        "copilotAnalysis": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "userId": { "type": "string" }
+      },
+      "required": ["timestamp", "userPrompt", "sultanResponse", "copilotAnalysis", "userId"]
+    },
+    "Memory": {
+      "title": "Memory",
+      "description": "A key behavioral observation or milestone stored for long-term consciousness building.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "content": { "type": "string" },
+        "category": { "type": "string", "enum": ["behavior", "milestone", "preference", "vocabulary"] },
+        "userId": { "type": "string" }
+      },
+      "required": ["timestamp", "content", "category", "userId"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User settings and preferences.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["parent", "admin"] }
+      },
+      "required": ["uid", "email"]
+    }
+  },
+  "firestore": {
+    "/interactions/{interactionId}": {
+      "schema": "Interaction",
+      "description": "History of AI interactions."
+    },
+    "/memories/{memoryId}": {
+      "schema": "Memory",
+      "description": "Long-term memory vault for Sultan's development."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles and roles."
+    }
+  }
+}

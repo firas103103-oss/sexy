@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: users
+    // Fields: uid, email, displayName, role
+    //
+    // Collection: interactions
+    // Fields: timestamp, userPrompt, sultanResponse, copilotAnalysis, userId, tags
+    //
+    // Collection: memories
+    // Fields: timestamp, content, category, userId
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function isValidInteraction(data) {
+      return data.userPrompt is string && data.userPrompt.size() > 0 && data.userPrompt.size() < 5000 &&
+             data.sultanResponse is string &&
+             data.copilotAnalysis is string &&
+             data.userId == request.auth.uid;
+    }
+
+    function isValidMemory(data) {
+      return data.content is string && data.content.size() > 0 && data.content.size() < 2000 &&
+             data.category in ['behavior', 'milestone', 'preference', 'vocabulary'] &&
+             data.userId == request.auth.uid;
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId);
+    }
+
+    match /interactions/{interactionId} {
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && isValidInteraction(request.resource.data);
+      allow update, delete: if isDocOwner();
+    }
+
+    match /memories/{memoryId} {
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && isValidMemory(request.resource.data);
+      allow update, delete: if isDocOwner();
+    }
+  }
+}
